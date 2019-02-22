@@ -151,6 +151,15 @@ This program is available under Apache License Version 2.0, available at https:/
         text-overflow: ellipsis;
       }
 
+      [part~=row][draggable] [part~="cell"] {
+        cursor: grab;
+      }
+
+      [part~=row][draggable] [part~="cell"] ::slotted(vaadin-grid-cell-content) {
+        pointer-events: none;
+      }
+
+
       [hidden] {
         display: none !important;
       }

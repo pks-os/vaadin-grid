@@ -398,6 +398,29 @@ This program is available under Apache License Version 2.0, available at https:/
       constructor() {
         super();
         this.addEventListener('animationend', this._onAnimationEnd);
+
+        const img = new Image();
+        img.src = 'data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7';
+
+        this.addEventListener('dragstart', (e) => {
+          const data = this.selectedItems.map(item => {
+            return this._columnTree.slice(0).pop()
+              .sort((a, b) => a._order > b._order ? 1 : -1)
+              .filter(col => col.path)
+              .map(col => this.get(col.path, item))
+              .join('\t');
+          }).join('\n');
+          e.dataTransfer.setData('text/plain', data);
+          e.dataTransfer.setDragImage(img, 10, 10);
+        });
+
+        this.addEventListener('dragover', (e) => {
+          e.preventDefault();
+        });
+        this.addEventListener('drop', (e) => {
+          var data = e.dataTransfer.getData("text/plain");
+          console.log(data)
+        });
       }
 
       _createScrollerRows(count) {
@@ -645,6 +668,13 @@ This program is available under Apache License Version 2.0, available at https:/
 
       _updateItem(row, item) {
         row._item = item;
+
+        if (this._isSelected(item)) {
+          row.setAttribute('draggable', 'true');
+        } else {
+          row.removeAttribute('draggable');
+        }
+
         const model = this.__getRowModel(row);
 
         this._toggleAttribute('selected', model.selected, row);
